@@ -1,0 +1,104 @@
+<html>
+    <head>
+        <title>Look Inside</title>
+        <style>
+            body {
+                color: #011936;
+                font-family: sans-serif;
+                text-align: center;
+                display: flex;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            .container {
+                max-width: 800px;
+                margin: auto;
+                width: 90%;
+                padding: 2em;
+                border-radius: 2em;
+            }
+            #search {
+                display: inline-block;
+                width: 100%;
+                max-width: 400px;
+                padding: 1em;
+                font-size: 1.2rem;
+                border-radius: 3rem;
+                border-color: gray;
+                border-width: 1px;
+                outline: none;
+            }
+            table {
+                width: 100%;
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Gene Lookup</h1>
+            <input
+                id="search"
+                type="text"
+                placeholder="RSID or position"
+                onchange="search()"
+                onkeyup="search()"
+            />
+            <table id="main-table">
+                <thead>
+                    <tr>
+                        <th>Chrom.</th>
+                        <th>Position</th>
+                        <th>RSID</th>
+                        <th>REF</th>
+                        <th>ALT</th>
+                        <th>Format</th>
+                    </tr>
+                </thead>
+                <tbody id="row-dest">
+                    <!-- rows will be included here -->
+                </tbody>
+            </table>
+        </div>
+        <!--  -->
+        <template id="row-template">
+            <tr>
+                <td>chromosome</td>
+                <td>position</td>
+                <td>rsid</td>
+                <td>ref</td>
+                <td>alt</td>
+                <td>format</td>
+            </tr>
+        </template>
+        <script>
+            function clearTable() {
+                document.getElementById('row-dest').innerHTML = '';
+            }
+            function showTable() {
+                const table = document.getElementById('main-table');
+                table.style.display = 'table';
+            }
+            function addRow(data) {
+                showTable();
+                const parent = document.getElementById('row-dest');
+                const row = document.getElementById('row-template').content.cloneNode(true);
+                const columns = row.querySelectorAll('td');
+                columns.forEach(col => col.innerHTML = data[col.innerHTML]);
+                parent.appendChild(row);
+            }
+            async function search() {
+                const query = document.getElementById('search').value;
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                if (!data.success) {
+                    console.log('Something when wrong when searching.');
+                    return;
+                }
+                clearTable()
+                data.result.forEach(row => addRow(row));
+            }
+        </script>
+    </body>
+</html>

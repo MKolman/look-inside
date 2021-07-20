@@ -1,0 +1,4 @@
+# Python virtual environment
+venv
+# Database source file
+hg37variants1000g.vcf.gz
