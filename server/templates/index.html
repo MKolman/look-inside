@@ -54,6 +54,7 @@
                         <th>REF</th>
                         <th>ALT</th>
                         <th>Format</th>
+                        <th><button id='change-user' onclick='changeUser();'>User1</button></th>
                     </tr>
                 </thead>
                 <tbody id="row-dest">
@@ -61,7 +62,7 @@
                 </tbody>
             </table>
         </div>
-        <!--  -->
+        <!-- these values define keys returned from backend -->
         <template id="row-template">
             <tr>
                 <td>chromosome</td>
@@ -70,9 +71,19 @@
                 <td>ref</td>
                 <td>alt</td>
                 <td>format</td>
+                <td>value</td>
             </tr>
         </template>
         <script>
+            let user_id = 1;
+            function changeUser() {
+                let new_user_id = prompt('Do you want to change the user? Enter user id below:', user_id);
+                if (new_user_id !== null) {
+                    user_id = new_user_id;
+                    document.getElementById('change-user').innerHTML = 'User' + user_id;
+                    search();
+                }
+            }
             function clearTable() {
                 document.getElementById('row-dest').innerHTML = '';
             }
@@ -90,13 +101,15 @@
             }
             async function search() {
                 const query = document.getElementById('search').value;
-                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&user=${encodeURIComponent(user_id)}`);
                 const data = await response.json();
                 if (!data.success) {
-                    console.log('Something when wrong when searching.');
+                    console.warn('Something when wrong when searching.');
+                    console.warn(data.message);
+                    clearTable();
                     return;
                 }
-                clearTable()
+                clearTable();
                 data.result.forEach(row => addRow(row));
             }
         </script>

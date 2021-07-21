@@ -24,5 +24,23 @@ class GeneLocation(db.Model):
         db.Index('chrom_pos_idx', chromosome, position),
     )
 
+class Genotype(db.Model):
+    __tablename__ = 'genotype'
+    # Unique primary key
+    id = db.Column(db.Integer, primary_key=True)
+    # Which user's data is this?
+    user_id = db.Column(db.Integer)
+    # Link to the key of the gene location.
+    # Not a formal foreign key to save on time while importing.
+    gene_location = db.Column(db.String(100))
+    # Actual value of ref vs alt values
+    value = db.Column(db.Text)
+
+    # Combined index for user and gene_location.
+    # This allows fast lookups for genotype of a single user.
+    __table_args__ = (
+        db.Index('user_gene_idx', user_id, gene_location),
+    )
+
 
 

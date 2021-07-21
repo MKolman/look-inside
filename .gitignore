@@ -1,5 +1,5 @@
 # Python virtual environment
 venv
 __pycache__
-# Database source file
-hg37variants1000g.vcf.gz
+# Database source files
+*.vcf.gz
